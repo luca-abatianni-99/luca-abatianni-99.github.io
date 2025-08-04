@@ -1,0 +1,283 @@
+<div style="min-height: 90vh; padding-top: 15vh" nz-flex [nzAlign]="'center'" [nzVertical]="true">
+  <h3 style="margin-bottom: 2rem; color: var(--main-pink)" nz-typography>Ricettario babbissimo</h3>
+  <nz-tabset style="margin-bottom: 2rem" [nzSize]="'large'" [nzSelectedIndex]="0">
+    <nz-tab nzTitle="Primi" (nzClick)="this.currentFilter.next('primo')"></nz-tab>
+    <nz-tab nzTitle="Secondi" (nzClick)="this.currentFilter.next('secondo')"></nz-tab>
+    <nz-tab nzTitle="Contorni/altro" (nzClick)="this.currentFilter.next('contorno')"></nz-tab>
+    <nz-tab nzTitle="Dolci" (nzClick)="this.currentFilter.next('dolce')"></nz-tab>
+  </nz-tabset>
+
+  <ng-template #icon>
+    <nz-icon nzType="plus-circle" nzTheme="outline" />
+  </ng-template>
+
+  <nz-skeleton *ngIf="!recipes.length" [nzActive]="true"></nz-skeleton>
+
+  <nz-empty *ngIf="!displayRecipes.length && recipes.length" [nzNotFoundContent]="contentTpl">
+    <ng-template #contentTpl>
+      <span style="color: gray">Nessuna ricetta di questa categoria disponibile</span>
+    </ng-template>
+  </nz-empty>
+
+  <nz-row style="width: 90%" *ngIf="recipes" [nzGutter]="16">
+    <nz-col
+      *ngFor="let recipe of displayRecipes"
+      style="width: 30%"
+      [nzSpan]="8"
+      style="margin-bottom: 16px"
+    >
+      <ng-container>
+        <nz-card
+          style="width: 100%"
+          [nzTitle]="titleTemplate"
+          [nzActions]="[actionSee, actionEdit, actionDelete]"
+        >
+          <p>{{ (recipe.cookTime ?? 0) + (recipe.prepTime ?? 0) }} minuti</p>
+          <p>{{ recipe.servings }} persone</p>
+        </nz-card>
+        <ng-template #titleTemplate>
+          <span style="color: var(--main-pink)">{{ recipe.title }}</span>
+        </ng-template>
+        <ng-template #actionSee>
+          <nz-icon (click)="onClickRecipe(recipe.id ?? undefined)" nzType="eye" nzTheme="outline" />
+        </ng-template>
+        <ng-template #actionEdit>
+          <nz-icon nzType="edit" />
+        </ng-template>
+        <ng-template #actionDelete>
+          <a
+            nz-popconfirm
+            nzPopconfirmTitle="Vuoi davvero eliminare questa ricetta? L'azione è irreversibile"
+            nzPopconfirmPlacement="bottom"
+            (nzOnConfirm)="confirmDelete(recipe?.id)"
+          >
+            <nz-icon nzType="delete" nzTheme="outline" />
+          </a>
+        </ng-template>
+      </ng-container>
+    </nz-col>
+  </nz-row>
+
+  <div class="basic" (click)="showNewReicipeModal()">
+    <nz-float-button [nzIcon]="icon"></nz-float-button>
+  </div>
+
+  <nz-modal
+    nzWidth="80vw"
+    [(nzVisible)]="newRecipeModalVisible"
+    nzTitle="Aggiungi una nuova ricetta"
+    (nzOnCancel)="handleCancel()"
+    (nzOnOk)="handleOk()"
+    [nzMaskClosable]="false"
+  >
+    <ng-container *nzModalContent>
+      <div class="modal-body-scrollable">
+        <form nz-form [formGroup]="newRecipeFormGroup" (ngSubmit)="submitForm()">
+          <nz-divider
+            style="color: var(--main-pink)"
+            nzText="Info generali"
+            nzOrientation="left"
+          ></nz-divider>
+          <nz-form-item>
+            <nz-form-label [nzSpan]="7" nzRequired>Titolo</nz-form-label>
+            <nz-form-control
+              [nzSpan]="12"
+              nzHasFeedback
+              nzValidatingTip="Validating..."
+              [nzErrorTip]="titleError"
+            >
+              <input nz-input formControlName="title" placeholder="Titolo della ricetta" />
+              <ng-template #titleError let-control>
+                @if (control.errors?.['required']) {
+                  Dai un titolo alla ricetta!
+                }
+              </ng-template>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label [nzSpan]="7">Descrizione</nz-form-label>
+            <nz-form-control [nzSpan]="12" nzHasFeedback>
+              <textarea
+                nz-input
+                formControlName="description"
+                placeholder="Descrizione"
+                [nzAutosize]="{ minRows: 2, maxRows: 6 }"
+              ></textarea>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label [nzSpan]="7" nzRequired>Tipo piatto</nz-form-label>
+            <nz-form-control [nzSpan]="12" nzHasFeedback nzErrorTip="Seleziona il tipo!">
+              <nz-select formControlName="tags">
+                <nz-option nzValue="primo" nzLabel="Primo"></nz-option>
+                <nz-option nzValue="secondo" nzLabel="Secondo"></nz-option>
+                <nz-option nzValue="contorno" nzLabel="Contorno/altro"></nz-option>
+                <nz-option nzValue="dolce" nzLabel="Dolce"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label [nzSpan]="7" nzRequired>Tempo di preparazione</nz-form-label>
+            <nz-form-control [nzSpan]="12" nzHasFeedback [nzErrorTip]="prepTimeError">
+              <nz-input-number formControlName="prepTime" nzMin="0" nzMax="100000" />
+              <ng-template #prepTimeError let-control>
+                @if (control.errors?.['required']) {
+                  Segna i minuti di preparazione, anche 0!
+                }
+              </ng-template>
+              <span style="margin-left: 0.5rem">minuti</span>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label [nzSpan]="7" nzRequired>Tempo di cottura</nz-form-label>
+            <nz-form-control [nzSpan]="12" nzHasFeedback [nzErrorTip]="cookTimeError">
+              <nz-input-number formControlName="cookTime" nzMin="0" nzMax="100000" />
+              <ng-template #cookTimeError let-control>
+                @if (control.errors?.['required']) {
+                  Segna i minuti di cottura, anche 0!
+                }
+              </ng-template>
+              <span style="margin-left: 0.5rem">minuti</span>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label [nzSpan]="7" nzRequired>Per quante persone?</nz-form-label>
+            <nz-form-control [nzSpan]="12" nzHasFeedback [nzErrorTip]="servingsError">
+              <nz-input-number formControlName="servings" nzMin="1" nzMax="1000" />
+              <ng-template #servingsError let-control>
+                @if (control.errors?.['required']) {
+                  Segna il numero di porzioni, almeno 1!
+                }
+              </ng-template>
+              <span style="margin-left: 0.5rem">persone</span>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-divider
+            style="color: var(--main-pink)"
+            nzText="Ingredienti"
+            nzOrientation="left"
+          ></nz-divider>
+          <nz-form-item formArrayName="ingredients">
+            @for (control of ingredients.controls; track control; let i = $index) {
+              <div [formGroupName]="i" style="width: 100%; display: flex; margin-bottom: 1rem">
+                @if (i === 0) {
+                  <nz-form-label nzRequired [nzXs]="7" [nzSm]="7">Ingredienti</nz-form-label>
+                }
+
+                <nz-form-control
+                  [nzXs]="10"
+                  [nzSm]="18"
+                  [nzOffset]="i === 0 ? 0 : 7"
+                  nzErrorTip="Aggiungi l'ingrediente alla ricetta o cancella quello vuoto"
+                >
+                  <span style="color: var(--main-pink); margin-right: 0.5rem">{{ i + 1 }}</span>
+
+                  <input
+                    style="width: 40%"
+                    class="step-input"
+                    nz-input
+                    placeholder="ingrediente"
+                    formControlName="name"
+                  />
+
+                  <input
+                    style="width: 40%"
+                    class="step-input"
+                    nz-input
+                    placeholder="quantità"
+                    formControlName="quantity"
+                  />
+                  <nz-icon
+                    nzType="minus-circle-o"
+                    class="dynamic-delete-button"
+                    (click)="removeIngredient(i, $event)"
+                  />
+                </nz-form-control>
+              </div>
+            }
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-control [nzXs]="{ span: 24, offset: 0 }" [nzSm]="{ span: 16, offset: 7 }">
+              <button nz-button nzType="dashed" class="add-button" (click)="addIngredient($event)">
+                <nz-icon nzType="plus" />
+                Aggiungi ingrediente
+              </button>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-divider
+            style="color: var(--main-pink)"
+            nzText="Step"
+            nzOrientation="left"
+          ></nz-divider>
+          <nz-form-item formArrayName="steps">
+            <div
+              *ngFor="let stepControl of steps.controls; let i = index"
+              [formGroupName]="i"
+              style="width: 100%; display: flex; margin-bottom: 1rem"
+            >
+              <nz-form-label *ngIf="i === 0" nzRequired [nzXs]="7" [nzSm]="7">
+                Step della ricetta
+              </nz-form-label>
+
+              <nz-form-control
+                [nzXs]="10"
+                [nzSm]="18"
+                [nzOffset]="i === 0 ? 0 : 7"
+                nzErrorTip="Aggiungi uno step alla ricetta o cancella lo step vuoto"
+              >
+                <span style="color: var(--main-pink); margin-right: 0.5rem">{{ i + 1 }}</span>
+                <textarea
+                  nz-input
+                  class="step-input"
+                  placeholder="Aggiungi step"
+                  [nzAutosize]="{ minRows: 3, maxRows: 5 }"
+                  formControlName="description"
+                ></textarea>
+                <nz-icon
+                  nzType="minus-circle-o"
+                  class="dynamic-delete-button"
+                  (click)="removeField(i, $event)"
+                />
+              </nz-form-control>
+            </div>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-control [nzXs]="{ span: 24, offset: 0 }" [nzSm]="{ span: 16, offset: 7 }">
+              <button nz-button nzType="dashed" class="add-button" (click)="addField($event)">
+                <nz-icon nzType="plus" />
+                Aggiungi step
+              </button>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-divider
+            style="color: var(--main-pink)"
+            nzText="Altro"
+            nzOrientation="left"
+          ></nz-divider>
+          <nz-form-item>
+            <nz-form-label [nzSpan]="7">Immagine</nz-form-label>
+            <nz-form-control [nzSpan]="12" nzHasFeedback nzValidatingTip="Validating...">
+              <input nz-input formControlName="imgUrl" placeholder="Url dell'immagine" />
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label [nzSpan]="7">Note</nz-form-label>
+            <nz-form-control [nzSpan]="12" nzHasFeedback>
+              <textarea
+                nz-input
+                formControlName="notes"
+                placeholder="Note aggiuntive"
+                [nzAutosize]="{ minRows: 2, maxRows: 6 }"
+              ></textarea>
+            </nz-form-control>
+          </nz-form-item>
+        </form>
+      </div>
+    </ng-container>
+  </nz-modal>
+</div>

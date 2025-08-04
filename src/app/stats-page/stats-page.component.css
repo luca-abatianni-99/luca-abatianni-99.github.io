@@ -1,0 +1,27 @@
+.tempo-cards {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.card {
+  background: #fff0f6;
+  border-radius: 1rem;
+  padding: 1rem 2rem;
+  box-shadow: 0 0 10px rgba(233, 30, 99, 0.2);
+  text-align: center;
+}
+
+.numero {
+  font-size: 2rem;
+  color: #e91e63;
+  font-weight: bold;
+  transition: all 0.3s ease-in-out;
+}
+
+.label {
+  font-size: 0.9rem;
+  color: #555;
+}

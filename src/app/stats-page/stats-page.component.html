@@ -1,0 +1,69 @@
+<div style="min-height: 90vh; padding-top: 15vh" nz-flex [nzAlign]="'center'" [nzVertical]="true">
+  <h3 style="margin-bottom: 1rem; color: var(--main-pink)" nz-typography>Le statistiche babbe</h3>
+
+  <h4 style="margin-bottom: 0.5rem" nz-typography>💛 Durata ufficiale del fidanzamento 💛</h4>
+  <div class="tempo-cards">
+    <div class="card">
+      <div class="numero">
+        {{ anniMesiGiorni.years ? (anniMesiGiorni.years | number: '1.0-0') : '--' }}
+      </div>
+      <div class="label">Anni</div>
+    </div>
+    <div class="card">
+      <div class="numero">
+        {{ anniMesiGiorni.months ? (anniMesiGiorni.months | number: '1.0-0') : '--' }}
+      </div>
+      <div class="label">Mesi</div>
+    </div>
+    <div class="card">
+      <div class="numero">
+        {{ anniMesiGiorni.days ? (anniMesiGiorni.days | number: '1.0-0') : '--' }}
+      </div>
+      <div class="label">Giorni</div>
+    </div>
+  </div>
+  <h5 style="margin-bottom: 0.5rem; margin-top: 1rem" nz-typography>
+    oppure se proprio vuoi vedere i numeroni
+  </h5>
+  <p style="font-size: 12px">(calcolati dalle ore 05:00 dell 11/08/2021)</p>
+  <div class="tempo-cards">
+    <div class="card">
+      <div class="numero">{{ giorni ? (giorni | number: '1.0-0') : '--' }}</div>
+      <div class="label">Giorni</div>
+    </div>
+    <div class="card">
+      <div class="numero">{{ ore ? (ore | number: '1.0-0') : '--' }}</div>
+      <div class="label">Ore</div>
+    </div>
+    <div class="card">
+      <div class="numero">{{ minuti ? (minuti | number: '1.0-0') : '--' }}</div>
+      <div class="label">Minuti</div>
+    </div>
+    <div class="card">
+      <div class="numero">{{ secondi ? (secondi | number: '1.0-0') : '--' }}</div>
+      <div class="label">Secondi</div>
+    </div>
+  </div>
+
+  <button style="margin-top: 3rem" nz-button (click)="openModal()">
+    Da quanto tempo stiamo insieme secondo Luca?
+  </button>
+
+  <nz-modal
+    nzWidth="80vw"
+    [(nzVisible)]="isModalVisible"
+    (nzOnCancel)="handleCancel()"
+    (nzOnOk)="handleOk()"
+    [nzFooter]="modalFooter"
+  >
+    <ng-container *nzModalContent>
+      <div style="height: 50vh; width: 100%; display: flex; align-items: center; justify-content: center">
+        <p>Troppo</p>
+      </div>
+    </ng-container>
+    <ng-template #modalFooter>
+      <button nz-button nzType="default" (click)="handleCancel()">Suca</button>
+      <button nz-button nzType="primary" (click)="handleOk()">Suca ma in rosa</button>
+    </ng-template>
+  </nz-modal>
+</div>

@@ -1,0 +1,25 @@
+@import '@fontsource/arimo/index.css';
+@import '@fontsource/raleway';
+@import '@fontsource/poppins';
+
+/* Font per titoli */
+h1, h2, h3, h4, h5 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 800;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Font di base per tutto il resto */
+html,
+body,
+app-root {
+  font-family: 'Raleway', sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* Custom colors */
+:root {
+  --main-pink: #e91e63;
+}

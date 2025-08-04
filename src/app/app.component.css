@@ -1,0 +1,9 @@
+.fixed-header {
+  position: fixed;
+  top: 10px;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background-color: transparent; /* leggermente trasparente */
+  padding: 0.5rem 1rem;
+}

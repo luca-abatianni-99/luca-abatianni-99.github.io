@@ -1,0 +1,72 @@
+<div style="min-height: 90vh; padding-top: 15vh" nz-flex [nzAlign]="'center'" [nzVertical]="true">
+  <div nz-row style="width: 85%">
+    <div nz-col nzSpan="10" style="text-align: center; padding: 0.5rem">
+      <img
+        nz-image
+        style="margin-bottom: 2rem"
+        width="200px"
+        height="200px"
+        [nzSrc]="recipe.imgUrl ? recipe.imgUrl : ''"
+        alt=""
+      />
+      <h3 style="margin-bottom: 2rem; color: var(--main-pink)" nz-typography>{{ recipe.title }}</h3>
+      <p>{{ recipe.description }}</p>
+    </div>
+    <div nz-col nzSpan="14">
+      <div nz-row style="min-height: 25%; margin-bottom: 1rem; justify-content: space-between">
+        <div nz-col nzSpan="5" class="card">
+          <span style="color: var(--main-pink)">​🍕​ Tipo</span>
+          <br />
+          <span>
+            {{ capitalizeFirstLetter(recipe.tags) }}
+          </span>
+        </div>
+        <div nz-col nzSpan="5" class="card">
+          <span style="color: var(--main-pink)">​🍽️ Porzioni</span>
+          <br />
+          <span>{{ recipe.servings }}</span>
+        </div>
+        <div nz-col nzSpan="5" class="card">
+          <span style="color: var(--main-pink)">​🕑 Prepar.</span>
+          <br />
+          <span>{{ recipe.prepTime?.toString() }} min</span>
+        </div>
+        <div nz-col nzSpan="5" class="card">
+          <span style="color: var(--main-pink)">​🕓 Cottura</span>
+          <br />
+          <span>{{ recipe.cookTime?.toString() }} min</span>
+        </div>
+      </div>
+      <div class="card" style="min-height: 70%; align-items: flex-start" nz-row>
+        <div style="margin-bottom: 1rem">
+          <h5 style="margin-bottom: 1rem; margin-top: 0; color: var(--main-pink)" nz-typography>
+            Ingredienti
+          </h5>
+        </div>
+        <div class="ingredient-list">
+          <div *ngFor="let ingredient of recipe.ingredients" style="text-align: start">
+            <span style="font-weight: 1000;">
+              {{ '- ' + capitalizeFirstLetter(ingredient.name) }}
+            </span>
+            <span>{{ ': ' + ingredient.quantity }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top: 2rem">
+    <h5 style="margin-bottom: 1rem; color: var(--main-pink)" nz-typography>Preparazione</h5>
+    <nz-list nzItemLayout="horizontal">
+      @for (step of recipe.steps; track step; let i = $index) {
+        <nz-ribbon [nzText]="(i + 1).toString()" nzColor="pink" nzPlacement="start">
+          <nz-list-item>
+            <span style="margin-left: 1.5rem">{{ step.description }}</span>
+          </nz-list-item>
+        </nz-ribbon>
+      }
+      @if (recipe.steps?.length === 0) {
+        <nz-list-empty />
+      }
+    </nz-list>
+  </div>
+</div>

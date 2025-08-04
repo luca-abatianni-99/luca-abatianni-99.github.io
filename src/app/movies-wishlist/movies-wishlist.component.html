@@ -1,0 +1,189 @@
+<div style="min-height: 90vh; padding-top: 15vh" nz-flex [nzAlign]="'center'" [nzVertical]="true">
+  <h3 style="margin-bottom: 2rem; color: var(--main-pink)" nz-typography>Filmettini carini da vedere</h3>
+  <nz-alert
+    style="margin-bottom: 1rem"
+    *ngIf="searchValue"
+    nzBanner
+    nzType="info"
+    nzMessage="Ci sono filtri applicati alla tabella"
+  ></nz-alert>
+
+  <nz-table
+    *ngIf="movies"
+    style="max-width: 90vw"
+    [nzLoading]="tableLoading"
+    [nzData]="displayMovies"
+    [nzTableLayout]="'fixed'"
+    [nzBordered]="true"
+    [nzShowPagination]="false"
+  >
+    <thead>
+      <tr>
+        <th nzWidth="5%"></th>
+        <!-- Colonna per l'icona drag -->
+        <th nzWidth="20%">
+          Titolo
+          <nz-filter-trigger
+            [(nzVisible)]="isSearchVisible"
+            [nzActive]="searchValue.length > 0"
+            [nzDropdownMenu]="menu"
+          >
+            <nz-icon nzType="search" />
+          </nz-filter-trigger>
+        </th>
+        <th nzWidth="25%"><span style="font-style: italic">Descrizione</span></th>
+        <th nzWidth="10%">Link</th>
+        <th nzWidth="10%">Voto</th>
+        <th nzWidth="10%">Visto?</th>
+        <th nzWidth="10%">Azioni</th>
+      </tr>
+    </thead>
+    <tbody cdkDropList (cdkDropListDropped)="dropTable($event)">
+      <tr *ngFor="let item of displayMovies; let i = index" cdkDrag>
+        <td cdkDragHandle style="cursor: move">
+          <nz-icon nzType="menu" nzTheme="outline" />
+        </td>
+        <td>
+          <span style="font-weight: 900">{{ item.title }}</span>
+        </td>
+        <td>{{ item.description }}</td>
+        <td [nzEllipsis]="true">
+          <a [href]="item.link" target="_blank" style="text-decoration: underline;">
+            {{
+              item.link?.includes('imdb')
+                ? 'IMDb'
+                : item.link?.includes('rottentomatoes')
+                  ? 'RT'
+                  : 'link'
+            }}
+          </a>
+        </td>
+        <td>{{ getScoreEmoji(item.score) }} {{ item.score }}/10</td>
+        <td>{{ item.seen ? '✅ Si' : '❌ No' }}</td>
+        <td>
+          <nz-icon
+            style="margin-left: 0.5rem; margin-right: 0.5rem"
+            nzType="eye"
+            nzTheme="outline"
+            (click)="showModal(i, true)"
+          />
+          <nz-icon
+            style="margin-left: 0.5rem; margin-right: 0.5rem"
+            nzType="edit"
+            nzTheme="outline"
+            (click)="showModal(i, false)"
+          />
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+
+  <nz-dropdown-menu #menu="nzDropdownMenu">
+    <div class="ant-table-filter-dropdown">
+      <div class="search-box">
+        <input type="text" nz-input placeholder="Search name" [(ngModel)]="searchValue" />
+        <button nz-button nzSize="small" nzType="primary" (click)="search()" class="search-button">
+          Cerca
+        </button>
+        <button nz-button nzSize="small" (click)="reset()">Resetta</button>
+      </div>
+    </div>
+  </nz-dropdown-menu>
+
+  <nz-modal
+    *ngIf="indexEditedMovie !== -1 && formGroupArray[indexEditedMovie]"
+    nzDraggable
+    nzCentered
+    [(nzVisible)]="isModalVisible"
+    [nzTitle]="this.displayMovies[indexEditedMovie].title || 'film non trovato'"
+    nzWidth="80vw"
+    (nzOnCancel)="handleCancel()"
+    (nzOnOk)="handleOk()"
+  >
+    <ng-container *nzModalContent>
+      <form
+        nz-form
+        [formGroup]="formGroupArray[indexEditedMovie]"
+        (ngSubmit)="submitForm(indexEditedMovie)"
+      >
+        <nz-form-item>
+          <nz-form-label [nzSm]="8" [nzXs]="12">Titolo</nz-form-label>
+          <nz-form-control [nzSm]="8" [nzXs]="12">
+            <input
+              [readonly]="readonlyMovie"
+              nz-input
+              nzVariant="borderless"
+              placeholder="Inserisci titolo..."
+              formControlName="title"
+              type="text"
+            />
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzSm]="8" [nzXs]="24">Descrizione</nz-form-label>
+          <nz-form-control [nzSm]="16" [nzXs]="24">
+            <textarea
+              [readonly]="readonlyMovie"
+              nz-input
+              nzVariant="borderless"
+              formControlName="description"
+              placeholder="Inserisci descrizione..."
+              [nzAutosize]="{ minRows: 2, maxRows: 6 }"
+            ></textarea>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzSm]="8" [nzXs]="24">Link</nz-form-label>
+          <nz-form-control [nzSm]="16" [nzXs]="24">
+            <input
+              [readonly]="readonlyMovie"
+              nz-input
+              nzVariant="borderless"
+              placeholder="Link a imdb o affini..."
+              formControlName="link"
+              type="text"
+            />
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzSm]="8" [nzXs]="24">Note</nz-form-label>
+          <nz-form-control [nzSm]="16" [nzXs]="24">
+            <textarea
+              [readonly]="readonlyMovie"
+              nz-input
+              nzVariant="borderless"
+              formControlName="description"
+              placeholder="Inserisci note..."
+              [nzAutosize]="{ minRows: 2, maxRows: 6 }"
+            ></textarea>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzSm]="8" [nzXs]="12">Voto</nz-form-label>
+          <nz-form-control [nzSm]="2" [nzXs]="4">
+            <input
+              [readonly]="readonlyMovie"
+              nz-input
+              nzVariant="borderless"
+              placeholder="Voto del film..."
+              formControlName="score"
+              type="number"
+            />
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzSm]="8" [nzXs]="12">Visto?</nz-form-label>
+          <nz-form-control [nzSm]="2" [nzXs]="4">
+            <input
+              [readonly]="readonlyMovie"
+              nz-input
+              placeholder="Già visto...?"
+              formControlName="seen"
+              type="text"
+            />
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+    </ng-container>
+  </nz-modal>
+</div>
