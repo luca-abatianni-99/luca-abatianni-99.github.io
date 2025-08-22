@@ -1,0 +1,16 @@
+name: Keep Supabase Awake
+
+on:
+  schedule:
+    - cron: "0 */12 * * *"   # ogni 12 ore
+  workflow_dispatch:         # permette di lanciarlo manualmente
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call Supabase REST
+        run: |
+          curl -s -o /dev/null -w "%{http_code}\n" \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+            "https://ybewqojaquvmsmdyhpnu.supabase.co/rest/v1/recipe-book?select=id&limit=1"
