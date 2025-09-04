@@ -18,6 +18,20 @@ import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { LeafletDirective } from '@bluehalo/ngx-leaflet';
 import * as L from 'leaflet';
+/* const iconRetinaUrl = 'assets/leaflet/marker-icon-2x.png';
+const iconUrl = 'assets/leaflet/marker-icon.png';
+const shadowUrl = 'assets/leaflet/marker-shadow.png';
+
+L.Marker.prototype.options.icon = L.icon({
+  iconRetinaUrl,
+  iconUrl,
+  shadowUrl,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  tooltipAnchor: [16, -28],
+  shadowSize: [41, 41],
+}); */
 
 @Component({
   selector: 'app-travel-book',
@@ -40,16 +54,14 @@ import * as L from 'leaflet';
     NzDividerModule,
     NzFloatButtonModule,
     NzPopconfirmModule,
-    LeafletDirective
+    LeafletDirective,
   ],
   templateUrl: './travel-book.component.html',
   styleUrl: './travel-book.component.css',
 })
 export class TravelBookComponent implements OnInit, AfterViewInit {
   private map!: L.Map;
-  markers: L.Marker[] = [
-    L.marker([23.7771, 90.3994]), // Dhaka, Bangladesh
-  ];
+  markers: L.Marker[] = [];
 
   constructor() {}
 
@@ -61,9 +73,23 @@ export class TravelBookComponent implements OnInit, AfterViewInit {
   }
 
   private initMap() {
-    const baseMapURl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-    this.map = L.map('map');
-    L.tileLayer(baseMapURl).addTo(this.map);
+    const baseMapURL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+
+    // Centro sulla media Europa (latitudine e longitudine approssimativa)
+    const europeCenter: L.LatLngExpression = [50.0, 10.0];
+
+    // Zoom iniziale adeguato per vedere gran parte dell'Europa
+    const initialZoom = 4;
+
+    this.map = L.map('map').setView(europeCenter, initialZoom);
+
+    L.tileLayer(baseMapURL, {
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    }).addTo(this.map);
+
+    // Esempio marker
+    const marker = L.marker([51.5, -0.09]).addTo(this.map);
   }
 
   private centerMap() {

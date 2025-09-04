@@ -150,7 +150,7 @@
           *ngIf="currentStatus === moviePageStatus.ADDING"
         >
           <h2>Cerca il film online...</h2>
-          <nz-input-group [nzSuffix]="suffixIconSearch" style="width: 90%;">
+          <nz-input-group [nzSuffix]="suffixIconSearch" style="width: 90%">
             <input type="text" nz-input placeholder="Cerca il film..." [(ngModel)]="omdbQuery" />
           </nz-input-group>
           <ng-template #suffixIconSearch>
@@ -158,7 +158,7 @@
             <nz-icon nzType="close" (click)="clearOmdbSearch()" />
           </ng-template>
           <div class="omdb-response" *ngIf="omdbResponseData.length">
-            <nz-list style="width: 90%;">
+            <nz-list style="width: 90%">
               @for (item of omdbResponseData; track item) {
                 <nz-list-item>
                   <span>{{ `${item.Title} (${item.Year})` }}</span>
@@ -194,7 +194,7 @@
               <input
                 [readonly]="currentStatus === moviePageStatus.VIEWING"
                 nz-input
-                nzVariant="borderless"
+                [nzVariant]="currentStatus === moviePageStatus.VIEWING ? 'borderless' : 'outlined'"
                 placeholder="Inserisci titolo..."
                 formControlName="title"
                 type="text"
@@ -212,7 +212,7 @@
               <textarea
                 [readonly]="currentStatus === moviePageStatus.VIEWING"
                 nz-input
-                nzVariant="borderless"
+                [nzVariant]="currentStatus === moviePageStatus.VIEWING ? 'borderless' : 'outlined'"
                 formControlName="description"
                 placeholder="Inserisci descrizione..."
                 [nzAutosize]="{ minRows: 2, maxRows: 6 }"
@@ -225,7 +225,7 @@
               <input
                 [readonly]="currentStatus === moviePageStatus.VIEWING"
                 nz-input
-                nzVariant="borderless"
+                [nzVariant]="currentStatus === moviePageStatus.VIEWING ? 'borderless' : 'outlined'"
                 placeholder="Link a imdb o affini..."
                 formControlName="link"
                 type="text"
@@ -238,7 +238,7 @@
               <textarea
                 [readonly]="currentStatus === moviePageStatus.VIEWING"
                 nz-input
-                nzVariant="borderless"
+                [nzVariant]="currentStatus === moviePageStatus.VIEWING ? 'borderless' : 'outlined'"
                 formControlName="notes"
                 placeholder="Inserisci note..."
                 [nzAutosize]="{ minRows: 2, maxRows: 6 }"
@@ -251,7 +251,7 @@
               <input
                 [readonly]="currentStatus === moviePageStatus.VIEWING"
                 nz-input
-                nzVariant="borderless"
+                [nzVariant]="currentStatus === moviePageStatus.VIEWING ? 'borderless' : 'outlined'"
                 placeholder="Voto del film..."
                 formControlName="score"
                 type="number"
@@ -282,6 +282,7 @@
               <input
                 [readonly]="currentStatus === moviePageStatus.VIEWING"
                 nz-input
+                [nzVariant]="currentStatus === moviePageStatus.VIEWING ? 'borderless' : 'outlined'"
                 placeholder="Regista"
                 formControlName="director"
                 type="text"
@@ -294,6 +295,7 @@
               <input
                 [readonly]="currentStatus === moviePageStatus.VIEWING"
                 nz-input
+                [nzVariant]="currentStatus === moviePageStatus.VIEWING ? 'borderless' : 'outlined'"
                 placeholder="Attori"
                 formControlName="actors"
                 type="text"
@@ -306,6 +308,7 @@
               <input
                 [readonly]="currentStatus === moviePageStatus.VIEWING"
                 nz-input
+                [nzVariant]="currentStatus === moviePageStatus.VIEWING ? 'borderless' : 'outlined'"
                 placeholder="Data dell'uscita"
                 formControlName="released"
                 type="text"
@@ -318,6 +321,7 @@
               <input
                 [readonly]="currentStatus === moviePageStatus.VIEWING"
                 nz-input
+                [nzVariant]="currentStatus === moviePageStatus.VIEWING ? 'borderless' : 'outlined'"
                 placeholder="Genere/i del film"
                 formControlName="genre"
                 type="text"
@@ -330,6 +334,7 @@
               <input
                 [readonly]="currentStatus === moviePageStatus.VIEWING"
                 nz-input
+                [nzVariant]="currentStatus === moviePageStatus.VIEWING ? 'borderless' : 'outlined'"
                 placeholder="Voto su IMDb"
                 formControlName="imdbRating"
                 type="text"
@@ -342,6 +347,7 @@
               <input
                 [readonly]="currentStatus === moviePageStatus.VIEWING"
                 nz-input
+                [nzVariant]="currentStatus === moviePageStatus.VIEWING ? 'borderless' : 'outlined'"
                 placeholder="Lo vedi nell'url: inizia con 'tt'"
                 formControlName="imdbID"
                 type="text"
@@ -354,6 +360,7 @@
               <input
                 [readonly]="currentStatus === moviePageStatus.VIEWING"
                 nz-input
+                [nzVariant]="currentStatus === moviePageStatus.VIEWING ? 'borderless' : 'outlined'"
                 placeholder="Url del poster del film"
                 formControlName="poster"
                 type="text"
