@@ -18,3 +18,23 @@
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 0.5rem;
 }
+
+.image-wrapper {
+  width: 100%; /* larghezza massima anteprima */
+  height: 200px; /* altezza massima anteprima */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden; /* nasconde l'eccesso se serve */
+  background-color: #fff0f6; /* sfondo neutro */
+}
+
+.image-wrapper img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain; /* mantiene proporzioni senza tagliare */
+}
+
+.italic-desc {
+  font-style: italic;
+}

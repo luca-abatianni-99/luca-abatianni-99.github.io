@@ -1,0 +1,11 @@
+[nz-carousel-content] {
+  text-align: center;
+  height: 60vh;
+  border: 3px solid var(--main-pink);
+  border-radius: 12px;
+}
+
+h3 {
+  margin-bottom: 0;
+  user-select: none;
+}

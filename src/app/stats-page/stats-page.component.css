@@ -1,5 +1,6 @@
 .tempo-cards {
   display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
   justify-content: center;
   margin-top: 1rem;
@@ -24,4 +25,18 @@
 .label {
   font-size: 0.9rem;
   color: #555;
+}
+
+@media (max-width: 768px) {
+  .main-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 95%;
+    max-width: 95%;
+    overflow-x: hidden; /* ultima difesa contro scroll orizzontale */
+    margin-bottom: 2rem;
+    margin: 0 auto; /* centra il container stesso */
+  }
 }

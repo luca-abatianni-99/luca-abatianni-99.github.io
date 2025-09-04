@@ -1,0 +1,10 @@
+<div style="min-height: 90vh; padding-top: 1vh" nz-flex [nzAlign]="'center'" [nzVertical]="true">
+  <h3 style="margin-bottom: 2rem; color: var(--main-pink)" nz-typography>
+    La Photo-babbo-gallery!!!
+  </h3>
+  <div class="photo-gallery">
+    <div class="photo-tile" *ngFor="let img of images">
+      <img nz-image [nzSrc]="img" [alt]="img" loading="lazy" />
+    </div>
+  </div>
+</div>

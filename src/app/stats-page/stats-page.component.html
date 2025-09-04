@@ -1,23 +1,23 @@
-<div style="min-height: 90vh; padding-top: 15vh" nz-flex [nzAlign]="'center'" [nzVertical]="true">
+<div class="main-container mx-auto" style="min-height: 90vh; padding-top: 1vh" nz-flex [nzAlign]="'center'" [nzVertical]="true">
   <h3 style="margin-bottom: 1rem; color: var(--main-pink)" nz-typography>Le statistiche babbe</h3>
 
   <h4 style="margin-bottom: 0.5rem" nz-typography>💛 Durata ufficiale del fidanzamento 💛</h4>
   <div class="tempo-cards">
     <div class="card">
       <div class="numero">
-        {{ anniMesiGiorni.years ? (anniMesiGiorni.years | number: '1.0-0') : '--' }}
+        {{ anniMesiGiorni.years ? (anniMesiGiorni.years | number: '1.0-0') : '0' }}
       </div>
       <div class="label">Anni</div>
     </div>
     <div class="card">
       <div class="numero">
-        {{ anniMesiGiorni.months ? (anniMesiGiorni.months | number: '1.0-0') : '--' }}
+        {{ anniMesiGiorni.months ? (anniMesiGiorni.months | number: '1.0-0') : '0' }}
       </div>
       <div class="label">Mesi</div>
     </div>
     <div class="card">
       <div class="numero">
-        {{ anniMesiGiorni.days ? (anniMesiGiorni.days | number: '1.0-0') : '--' }}
+        {{ anniMesiGiorni.days ? (anniMesiGiorni.days | number: '1.0-0') : '0' }}
       </div>
       <div class="label">Giorni</div>
     </div>
@@ -28,19 +28,19 @@
   <p style="font-size: 12px">(calcolati dalle ore 05:00 dell 11/08/2021)</p>
   <div class="tempo-cards">
     <div class="card">
-      <div class="numero">{{ giorni ? (giorni | number: '1.0-0') : '--' }}</div>
+      <div class="numero">{{ giorni ? (giorni | number: '1.0-0') : '0' }}</div>
       <div class="label">Giorni</div>
     </div>
     <div class="card">
-      <div class="numero">{{ ore ? (ore | number: '1.0-0') : '--' }}</div>
+      <div class="numero">{{ ore ? (ore | number: '1.0-0') : '0' }}</div>
       <div class="label">Ore</div>
     </div>
     <div class="card">
-      <div class="numero">{{ minuti ? (minuti | number: '1.0-0') : '--' }}</div>
+      <div class="numero">{{ minuti ? (minuti | number: '1.0-0') : '0' }}</div>
       <div class="label">Minuti</div>
     </div>
     <div class="card">
-      <div class="numero">{{ secondi ? (secondi | number: '1.0-0') : '--' }}</div>
+      <div class="numero">{{ secondi ? (secondi | number: '1.0-0') : '0' }}</div>
       <div class="label">Secondi</div>
     </div>
   </div>

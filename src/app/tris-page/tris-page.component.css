@@ -3,11 +3,62 @@ nz-splitter {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.box {
+/* .box {
+  aspect-ratio: 1/1;
+  min-height: 20vh;
+  max-height: 20vh;
   height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: #fff0f6;
+  border: solid 2px black;
+} */
+
+.box {
+  aspect-ratio: 1/1; /* mantiene quadrato ogni cella */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #fff0f6;
+  border: solid 2px black;
+  font-size: 1.2rem;
+}
+
+.tris-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  width: 60vh; /* desktop: quadrato principale */
+  max-width: 90vw; /* mai oltre lo schermo */
+  aspect-ratio: 1/1; /* mantiene forma quadrata */
+  margin: 0 auto;
+}
+
+.cell {
+  aspect-ratio: 1/1; /* cella quadrata */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #000000;
+  font-size: 2rem;
+  cursor: pointer;
+  user-select: none;
+  background-color: black;
+}
+
+.box img {
+  max-width: 90%; /* l’immagine non supera mai il 70% della cella */
+  max-height: 90%; /* resta dentro anche in verticale */
+  object-fit: contain; /* mantiene proporzioni senza deformarsi */
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .tris-grid {
+    width: 90vw; /* griglia quasi a tutto schermo */
+    max-width: 90vw;
+  }
 }
 
 .noemi {
@@ -16,6 +67,14 @@ nz-splitter {
 
 .luca {
   color: steelblue;
+}
+
+.noemi-cell {
+  border: solid 3px hotpink;
+}
+
+.luca-cell {
+  border: solid 3px steelblue;
 }
 
 .winning-cell {
@@ -54,4 +113,15 @@ nz-splitter {
 .animate-flip {
   animation: flip-in 0.6s ease-out;
   transform-style: preserve-3d;
+}
+
+@media (max-width: 768px) {
+  h3[nz-typography] {
+    font-size: 1.1rem !important; /* testo più compatto */
+    text-align: center;
+  }
+  h4[nz-typography] {
+    font-size: 1rem; /* testo più compatto */
+    text-align: center;
+  }
 }

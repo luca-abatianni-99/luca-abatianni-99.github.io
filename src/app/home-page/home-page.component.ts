@@ -14,6 +14,8 @@ import { NzModalRef, NzModalService, NZ_MODAL_DATA, NzModalModule } from 'ng-zor
 import { NzDrawerModule, NzDrawerPlacement } from 'ng-zorro-antd/drawer';
 import { trigger, style, animate, transition } from '@angular/animations';
 import { Router } from '@angular/router';
+import { ViewportService } from '../../services/viewport.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-home-page',
@@ -28,7 +30,7 @@ import { Router } from '@angular/router';
     NzSplitterModule,
     NzFloatButtonModule,
     NzModalModule,
-    CommonModule
+    CommonModule,
   ],
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.css',
@@ -51,17 +53,34 @@ import { Router } from '@angular/router';
   ],
 })
 export class HomePageComponent implements OnInit, AfterViewInit {
-
+  subtitles: string[] = [
+    'Un sito web super babbo',
+    'La babbaggine ha raggiunto livelli assurdi',
+    'Sottotitolo generico carino e dolce',
+    'Cristodiddio, super cruchy',
+    '*** Musichetta delle Barbie ***',
+    'Babba, tosta, indipendente',
+    'No, la password non è una bestemmia',
+    '8==================D',
+    'Aperto 24h 7/7',
+    'UAH UAH UAH',
+    "Affanculu mancu m'era fare sora ieu",
+  ];
+  randomSubtitle: string = '';
   isCollapsed = true;
+  isMobile$: Observable<boolean> = new Observable();
 
   constructor(
     private modal: NzModalService,
     private viewContainerRef: ViewContainerRef,
-    private router: Router
+    private router: Router,
+    private viewportService: ViewportService,
   ) {}
 
   ngOnInit(): void {
     console.log('onInit');
+    this.randomSubtitle = this.getRandomSubtitle();
+    this.isMobile$ = this.viewportService.isHandset$
   }
 
   ngAfterViewInit(): void {
@@ -111,7 +130,7 @@ export class HomePageComponent implements OnInit, AfterViewInit {
 
         this.modal.success({
           nzMask: false,
-          nzTitle: content[i],
+          nzTitle: '🎉🎊🍾🥂🍻🎂🥳',
           nzContent: content[i],
           nzStyle: {
             position: 'absolute',
@@ -138,5 +157,10 @@ export class HomePageComponent implements OnInit, AfterViewInit {
     this.modal.afterAllClose.subscribe(() => {
       console.log('afterAllClose emitted!');
     });
+  }
+
+  getRandomSubtitle(): string {
+    const index = Math.floor(Math.random() * this.subtitles.length);
+    return this.subtitles[index];
   }
 }

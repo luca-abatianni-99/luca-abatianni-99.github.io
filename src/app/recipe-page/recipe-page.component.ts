@@ -23,6 +23,7 @@ import { NzTypographyComponent } from 'ng-zorro-antd/typography';
 import { NzImageModule } from 'ng-zorro-antd/image';
 import { NzListModule } from 'ng-zorro-antd/list';
 import { NzBadgeModule } from 'ng-zorro-antd/badge';
+import { get } from 'lodash';
 
 @Component({
   selector: 'app-recipe-page',
@@ -54,7 +55,8 @@ import { NzBadgeModule } from 'ng-zorro-antd/badge';
 })
 export class RecipePageComponent {
   recipeId: number = -1;
-  recipe: RecipeModel = {};
+  recipe: RecipeModel = {id: -1};
+  defaultImageUrl: string = 'assets/img/contorno.png'
 
   constructor(
     private route: ActivatedRoute,
@@ -65,14 +67,21 @@ export class RecipePageComponent {
     this.recipeId = +this.route.snapshot.paramMap.get('id')!;
     this.getRecipeById(this.recipeId);
     console.log(this.recipe);
+    this.defaultImageUrl = this.getDefaultImageUrl()
   }
 
   getRecipeById(id: number): any {
-    this.recipe = this.recipeService.getRecipeById(id) ?? {};
+    this.recipe = this.recipeService.getRecipeById(id) ?? {id: -1};
   }
 
   capitalizeFirstLetter(text: string | undefined): string {
     if (!text) return '';
     return text.charAt(0).toUpperCase() + text.slice(1);
+  }
+
+  getDefaultImageUrl() {
+    if (this.recipe && this.recipe.tags) {
+      return `assets/img/${this.recipe.tags}.png`
+    } else return ''
   }
 }

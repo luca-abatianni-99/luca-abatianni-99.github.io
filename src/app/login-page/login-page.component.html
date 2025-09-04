@@ -1,12 +1,11 @@
-<div nz-flex style="height: 70vh" [nzJustify]="'center'" [nzAlign]="'center'" [nzVertical]="true">
-  <div class="m-5">
-    <nz-alert
-      *ngIf="loggedIn"
-      nzType="success"
-      nzMessage="Yeeee! La password è giustaaa!"
-    ></nz-alert>
-  </div>
-  <nz-card style="width: 40vw" nzTitle="Login">
+<div
+  nz-flex
+  style="height: 70vh; padding-top: 30vh;"
+  nzWrap="wrap"
+  [nzAlign]="'center'"
+  [nzVertical]="true"
+>
+  <nz-card class="mobile-card" nzTitle="Login">
     <form nz-form [formGroup]="validateForm" class="login-form" (ngSubmit)="submitForm()">
       <nz-form-item>
         <nz-form-control nzErrorTip="E mintila na cazz di password!">

@@ -50,10 +50,33 @@ nz-splitter {
 }
 
 .box {
-  height: 100%;
+  height: 87%;
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: #ffe7ea;
+  border: 2px solid pink;
+  border-radius: 12px;
+  color: var(--main-pink);
+}
+
+.mobile-box {
+  height: 70%;
+  width: 90%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #ffe7ea;
+  border: 2px solid pink;
+  border-radius: 12px;
+  color: var(--main-pink);
+  margin: 0.3rem;
+}
+
+.pink-box {
+  background-color: #ffd1dc;
+  border: 2px solid #f06292;
+  border-radius: 12px;
 }
 
 .basic {
@@ -69,4 +92,21 @@ nz-float-button {
   bottom: 24px;
   right: 24px;
   z-index: 1000; /* per stare sopra ad altri elementi */
+}
+
+@media (max-width: 768px) {
+
+  .mobile-box img {
+    margin: 1rem;
+    width: 20% !important; /* immagini più grandi ma fluide */
+  }
+
+  h3[nz-typography] {
+    font-size: 1.1rem !important; /* testo più compatto */
+    text-align: center;
+  }
+  h4[nz-typography] {
+    font-size: 1rem; /* testo più compatto */
+    text-align: center;
+  }
 }

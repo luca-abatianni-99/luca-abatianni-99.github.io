@@ -1,11 +1,23 @@
-<div style="min-height: 90vh; padding-top: 15vh" nz-flex [nzAlign]="'center'" [nzVertical]="true">
+<div
+  class="main-container"
+  style="min-height: 90vh; padding-top: 1vh"
+  nz-flex
+  [nzAlign]="'center'"
+  [nzVertical]="true"
+>
   <h3 style="margin-bottom: 2rem; color: var(--main-pink)" nz-typography>Ricettario babbissimo</h3>
-  <nz-tabset style="margin-bottom: 2rem" [nzSize]="'large'" [nzSelectedIndex]="0">
-    <nz-tab nzTitle="Primi" (nzClick)="this.currentFilter.next('primo')"></nz-tab>
-    <nz-tab nzTitle="Secondi" (nzClick)="this.currentFilter.next('secondo')"></nz-tab>
-    <nz-tab nzTitle="Contorni/altro" (nzClick)="this.currentFilter.next('contorno')"></nz-tab>
-    <nz-tab nzTitle="Dolci" (nzClick)="this.currentFilter.next('dolce')"></nz-tab>
-  </nz-tabset>
+  <div class="tab-wrapper">
+    <nz-tabset style="margin-bottom: 2rem" [nzSize]="'large'" [nzSelectedIndex]="0">
+      <nz-tab nzTitle="Primi" (nzClick)="this.currentFilter.next('primo')"></nz-tab>
+      <nz-tab nzTitle="Secondi" (nzClick)="this.currentFilter.next('secondo')"></nz-tab>
+      <nz-tab nzTitle="Contorni/altro" (nzClick)="this.currentFilter.next('contorno')"></nz-tab>
+      <nz-tab nzTitle="Dolci" (nzClick)="this.currentFilter.next('dolce')"></nz-tab>
+    </nz-tabset>
+  </div>
+
+  <div class="basic" (click)="showNewReicipeModal(false)">
+    <nz-float-button [nzIcon]="icon"></nz-float-button>
+  </div>
 
   <ng-template #icon>
     <nz-icon nzType="plus-circle" nzTheme="outline" />
@@ -19,21 +31,31 @@
     </ng-template>
   </nz-empty>
 
-  <nz-row style="width: 90%" *ngIf="recipes" [nzGutter]="16">
+  <nz-row class="nz-row-mobile" style="width: 90%" *ngIf="recipes" [nzGutter]="16">
     <nz-col
       *ngFor="let recipe of displayRecipes"
-      style="width: 30%"
-      [nzSpan]="8"
+      [nzMd]="8"
+      [nzSm]="12"
       style="margin-bottom: 16px"
     >
       <ng-container>
         <nz-card
-          style="width: 100%"
+          style="width: 100%; max-height: 35vh"
           [nzTitle]="titleTemplate"
           [nzActions]="[actionSee, actionEdit, actionDelete]"
         >
-          <p>{{ (recipe.cookTime ?? 0) + (recipe.prepTime ?? 0) }} minuti</p>
-          <p>{{ recipe.servings }} persone</p>
+          <div nz-card-grid>
+            <p>⏱️ {{ (recipe.cookTime ?? 0) + (recipe.prepTime ?? 0) }} minuti</p>
+            <p>​👥 {{ recipe.servings }} persone</p>
+          </div>
+          <div nz-card-grid class="card-img-container">
+            <img
+              nz-image
+              class="card-img"
+              alt="example"
+              [nzSrc]="recipe.imgUrl ? recipe.imgUrl : `assets/img/${recipe.tags}.png`"
+            />
+          </div>
         </nz-card>
         <ng-template #titleTemplate>
           <span style="color: var(--main-pink)">{{ recipe.title }}</span>
@@ -42,7 +64,7 @@
           <nz-icon (click)="onClickRecipe(recipe.id ?? undefined)" nzType="eye" nzTheme="outline" />
         </ng-template>
         <ng-template #actionEdit>
-          <nz-icon nzType="edit" />
+          <nz-icon nzType="edit" (click)="showNewReicipeModal(true, recipe.id)" />
         </ng-template>
         <ng-template #actionDelete>
           <a
@@ -51,28 +73,24 @@
             nzPopconfirmPlacement="bottom"
             (nzOnConfirm)="confirmDelete(recipe?.id)"
           >
-            <nz-icon nzType="delete" nzTheme="outline" />
+            <nz-icon style="color: red" nzType="delete" nzTheme="outline" />
           </a>
         </ng-template>
       </ng-container>
     </nz-col>
   </nz-row>
 
-  <div class="basic" (click)="showNewReicipeModal()">
-    <nz-float-button [nzIcon]="icon"></nz-float-button>
-  </div>
-
   <nz-modal
     nzWidth="80vw"
     [(nzVisible)]="newRecipeModalVisible"
-    nzTitle="Aggiungi una nuova ricetta"
+    [nzTitle]="editingRecipe ? 'Modifca una ricetta pre-esistente' : 'Aggiungi una nuova ricetta'"
     (nzOnCancel)="handleCancel()"
     (nzOnOk)="handleOk()"
     [nzMaskClosable]="false"
   >
     <ng-container *nzModalContent>
       <div class="modal-body-scrollable">
-        <form nz-form [formGroup]="newRecipeFormGroup" (ngSubmit)="submitForm()">
+        <form nz-form [formGroup]="newRecipeFormGroup">
           <nz-divider
             style="color: var(--main-pink)"
             nzText="Info generali"
@@ -259,12 +277,57 @@
             nzText="Altro"
             nzOrientation="left"
           ></nz-divider>
-          <nz-form-item>
+          <!-- <nz-form-item>
             <nz-form-label [nzSpan]="7">Immagine</nz-form-label>
             <nz-form-control [nzSpan]="12" nzHasFeedback nzValidatingTip="Validating...">
               <input nz-input formControlName="imgUrl" placeholder="Url dell'immagine" />
             </nz-form-control>
+          </nz-form-item> -->
+          <nz-form-item>
+            <nz-form-label [nzSpan]="7">Immagine</nz-form-label>
+            <nz-form-control [nzSpan]="12" nzHasFeedback nzValidatingTip="Validating...">
+              <div style="display: flex">
+                <div class="image-wrapper">
+                  <img
+                    nz-image
+                    [nzSrc]="
+                      newRecipeFormGroup.get('imgUrl')?.value
+                        ? newRecipeFormGroup.get('imgUrl')?.value
+                        : ''
+                    "
+                    alt="Preview"
+                  />
+                </div>
+                <a
+                  nz-popconfirm
+                  nzPopconfirmTitle="Vuoi eliminare la foto attuale?"
+                  nzPopconfirmPlacement="bottom"
+                  (nzOnConfirm)="deletePhotoFromForm()"
+                >
+                  <button nz-button type="button" style="margin-right: 1rem; color: red">
+                    <nz-icon nzType="delete" />
+                    Cancella immagine attuale
+                  </button>
+                </a>
+              </div>
+              <span style="font-size: 12px">* Se caricate più di 1 immagine, varrà l'ultima</span>
+              <nz-upload
+                style="margin-right: 1rem"
+                nzAccept="image/*"
+                nzListType="picture"
+                [nzMultiple]="true"
+                nzLimit="1"
+                [(nzFileList)]="selectedRecipePhoto"
+              >
+                <button nz-button>
+                  <nz-icon nzType="upload" />
+                  Carica immagine
+                </button>
+              </nz-upload>
+            </nz-form-control>
           </nz-form-item>
+          <div></div>
+
           <nz-form-item>
             <nz-form-label [nzSpan]="7">Note</nz-form-label>
             <nz-form-control [nzSpan]="12" nzHasFeedback>

@@ -1,0 +1,126 @@
+<div style="min-height: 90vh; padding-top: 1vh" nz-flex [nzAlign]="'center'" [nzVertical]="true">
+  <h3 style="margin-bottom: 2rem; color: var(--main-pink)" nz-typography>Il quizzone babbone</h3>
+
+  <ng-container *ngIf="status === quizStatus.START">
+    <div
+      nz-flex
+      nzVertical="true"
+      nzAlign="center"
+      nzJustify="center"
+      style="width: 80vw; text-align: center"
+    >
+      <h4 style="margin-top: 1rem; margin-bottom: 1rem">
+        ❓ Il quizzone babbone official serve a testare la conoscenza di Noemi riguardo la coppia, se
+        stessa ed il mondo (sciamu boni).
+      </h4>
+      <h4 style="margin-top: 1rem; margin-bottom: 1rem">
+        🔟 Ci saranno 10 domande molto facili, non ti preoccupare. Alla fine del quiz otterai i
+        risultati.
+      </h4>
+      <h4 style="margin-top: 1rem; margin-bottom: 1rem">
+        🤭 Se il punteggio sarà troppo basso verrai estromessa per sempre dal sito e potenzialmente
+        dalla relazione
+      </h4>
+      <h4 style="margin-top: 1rem; margin-bottom: 1rem">
+        🥵 No pressure comunque
+      </h4>
+
+      <div
+        nz-flex
+        nzAlign="center"
+        nzJustify="center"
+        style="margin-top: 3rem; margin-bottom: 5rem"
+      >
+        <button nz-button nzType="primary" (click)="status = quizStatus.QUIZ">Iniziamo!</button>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="status === quizStatus.QUIZ">
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div
+        style="width: 80vw; text-align: center"
+        *ngFor="let question of questions; let i = index"
+      >
+        <nz-divider
+          style="color: var(--main-pink)"
+          [nzText]="'Domanda ' + (i + 1).toString()"
+        ></nz-divider>
+
+        <h4 style="margin-top: 3rem; margin-bottom: 2rem">{{ question.text }}</h4>
+
+        <nz-radio-group style="margin-bottom: 3rem;" [formControlName]="question.id.toString()" nzButtonStyle="solid">
+          <label
+            style="margin-left: 0.5rem; margin-right: 0.5rem"
+            nz-radio-button
+            *ngFor="let option of question.options"
+            [nzValue]="option.id"
+          >
+            {{ option.text }}
+          </label>
+        </nz-radio-group>
+
+        <div
+          *ngIf="
+            form.get(question.id.toString())?.invalid && form.get(question.id.toString())?.touched
+          "
+          style="color: red"
+        >
+          Seleziona una risposta
+        </div>
+
+        <!-- <div style="margin-top: 1rem; margin-bottom: 1rem;">
+          <p *ngIf="isCorrect(question)" style="color: green">✔️ Corretto!</p>
+          <p *ngIf="!isCorrect(question)" style="color: red">
+            ❌ Sbagliato. Risposta giusta: {{ getCorrectOption(question)?.text }}
+          </p>
+        </div> -->
+      </div>
+
+      <div
+        nz-flex
+        nzAlign="center"
+        nzJustify="center"
+        style="margin-top: 3rem; margin-bottom: 5rem"
+      >
+        <button nz-button nzType="primary" [disabled]="form.invalid" (submit)="submit()">
+          Invia risposte
+        </button>
+      </div>
+    </form>
+  </ng-container>
+
+  <ng-container *ngIf="status === quizStatus.RESULTS">
+    <div
+      nz-flex
+      nzVertical="true"
+      nzAlign="center"
+      nzJustify="center"
+      style="width: 80vw; text-align: center"
+    >
+      <h2>Hai totalizzato</h2>
+
+      <img
+        nz-image
+        height="200px"
+        [nzSrc]="getResultImgSrc()"
+        alt=""
+      />
+
+      <h1 style="color: var(--main-pink)">{{scoreEmojis}} {{ score }} punt{{ score === 1 ? 'o' : 'i' }} {{scoreEmojis}}</h1>
+
+      <h2>su {{ questions.length }}</h2>
+
+      <div
+        nz-flex
+        nzAlign="center"
+        nzJustify="center"
+        style="margin-top: 3rem; margin-bottom: 5rem"
+      >
+        <button nz-button nzType="primary" (click)="status = quizStatus.START">Ricomincia!</button>
+      </div>
+    </div>
+  </ng-container>
+
+  <div *ngIf="submitted"></div>
+</div>

@@ -9,6 +9,10 @@ import { RecipeBookComponent } from './recipe-book/recipe-book.component';
 import { CustomRoutingGuards } from '../services/routing-guards.service';
 import { StatsPageComponent } from './stats-page/stats-page.component';
 import { RecipePageComponent } from './recipe-page/recipe-page.component';
+import { QuizPageComponent } from './quiz-page/quiz-page.component';
+import { PhotoGalleryComponent } from './photo-gallery/photo-gallery.component';
+import { BookshelfComponent } from './bookshelf/bookshelf.component';
+import { TravelBookComponent } from './travel-book/travel-book.component';
 
 export const routes: Routes = [
   { path: '', component: InitPageComponent },
@@ -23,4 +27,8 @@ export const routes: Routes = [
   { path: 'recipe-book', component: RecipeBookComponent, canActivate: [CustomRoutingGuards] },
   { path: 'recipe-book/:id', component: RecipePageComponent, canActivate: [CustomRoutingGuards] },
   { path: 'stats', component: StatsPageComponent, canActivate: [CustomRoutingGuards] },
+  { path: 'quiz', component: QuizPageComponent, canActivate: [CustomRoutingGuards] },
+  { path: 'photo-gallery', component: PhotoGalleryComponent, canActivate: [CustomRoutingGuards] },
+  { path: 'bookshelf', component: BookshelfComponent, canActivate: [CustomRoutingGuards] },
+  { path: 'travel-book', component: TravelBookComponent, canActivate: [CustomRoutingGuards] },
 ];

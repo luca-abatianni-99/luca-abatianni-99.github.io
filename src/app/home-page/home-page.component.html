@@ -5,7 +5,35 @@
   [nzAlign]="'center'"
   [nzVertical]="true"
 >
-  <img @fadeIn src="assets/img/logo.png" alt="Logo del sito" style="width: 70vw" />
+  <img
+    @fadeIn
+    src="assets/img/logo.png"
+    alt="Logo del sito"
+    [style.width]="(isMobile$ | async) ? '95vw' : '70vw'"
+  />
+  <div
+    nz-flex
+    [nzJustify]="'center'"
+    [nzAlign]="'center'"
+    [nzVertical]="false"
+    style="max-width: 80vw"
+  >
+    <h3
+      nz-typography
+      style="margin-top: 0.5rem; margin-right: 0.5rem"
+      [@fadeInDelayed]="{ value: '', params: { delay: 2000, duration: 1500 } }"
+    >
+      {{ randomSubtitle }}
+    </h3>
+    <nz-icon
+      style="color: var(--main-pink)"
+      [@fadeInDelayed]="{ value: '', params: { delay: 2000, duration: 1500 } }"
+      nzType="redo"
+      nzTheme="outline"
+      (click)="randomSubtitle = getRandomSubtitle()"
+    />
+  </div>
+
   <nz-icon
     [@fadeInDelayed]="{ value: '', params: { delay: 4000, duration: 1500 } }"
     style="margin-top: 4rem; font-size: 48px"
@@ -20,32 +48,63 @@
   </div> -->
 
 <div
+  *ngIf="!(isMobile$ | async)"
   nz-flex
   style="min-height: 100vh; margin-bottom: 10vh"
   [nzJustify]="'center'"
   [nzAlign]="'center'"
   [nzVertical]="true"
 >
-  <nz-splitter style="min-height: 70vh; min-width: 100%" nzLayout="vertical">
+  <h4 style="color: var(--main-pink)">Esplora le proposte del giorno</h4>
+  <nz-splitter style="min-height: 70vh; min-width: 90%; max-width: 90%" nzLayout="vertical">
     <nz-splitter-panel
-      style="align-items: center; justify-content: center"
+      style="display: flex; align-items: center; justify-content: center"
       [nzResizable]="false"
       [nzCollapsible]="false"
     >
       <nz-splitter style="min-height: 40vh">
+        <nz-splitter-panel class="pink-box" [nzResizable]="false" [nzCollapsible]="false">
+          <div
+            class="box"
+            (click)="onNavigate('/photo-gallery')"
+            nz-flex
+            [nzJustify]="'center'"
+            [nzAlign]="'center'"
+            [nzVertical]="true"
+          >
+            <img src="assets/img/gallery2.png" alt="Logo del sito" style="width: 40%" />
+            <h4 style="margin-top: 1rem; margin-bottom: 1rem" nz-typography>📷 Photogallery</h4>
+          </div>
+        </nz-splitter-panel>
         <nz-splitter-panel [nzResizable]="false" [nzCollapsible]="false">
-          <div class="box" nz-flex [nzJustify]="'center'" [nzAlign]="'center'" [nzVertical]="true">
-            <img src="assets/img/gallery.png" alt="Logo del sito" style="width: 50%" />
+          <div
+            class="box"
+            (click)="onNavigate('/quiz')"
+            nz-flex
+            [nzJustify]="'center'"
+            [nzAlign]="'center'"
+            [nzVertical]="true"
+          >
+            <img src="assets/img/quiz.png" alt="Logo del sito" style="width: 40%" />
             <h4 style="margin-top: 1rem; margin-bottom: 1rem" nz-typography>
-              📷 Photo-babbo-gallery 📷
+              ❓ Il quizzone babbo
             </h4>
           </div>
         </nz-splitter-panel>
         <nz-splitter-panel [nzResizable]="false" [nzCollapsible]="false">
-          <div class="box">Il quizzone babbone</div>
-        </nz-splitter-panel>
-        <nz-splitter-panel [nzResizable]="false" [nzCollapsible]="false">
-          <div class="box" (click)="onNavigate('movies-wishlist')">Filmettini carini</div>
+          <div
+            class="box"
+            (click)="onNavigate('movies-wishlist')"
+            nz-flex
+            [nzJustify]="'center'"
+            [nzAlign]="'center'"
+            [nzVertical]="true"
+          >
+            <img src="assets/img/film.png" alt="Logo del sito" style="width: 40%" />
+            <h4 style="margin-top: 1rem; margin-bottom: 1rem" nz-typography>
+              🎬 Filmettini carini
+            </h4>
+          </div>
         </nz-splitter-panel>
       </nz-splitter>
     </nz-splitter-panel>
@@ -56,13 +115,45 @@
     >
       <nz-splitter style="min-height: 40vh">
         <nz-splitter-panel [nzResizable]="false" [nzCollapsible]="false">
-          <div class="box" (click)="onNavigate('/tris')">Trisbabbo</div>
+          <div
+            class="box"
+            (click)="onNavigate('/stats')"
+            nz-flex
+            [nzJustify]="'center'"
+            [nzAlign]="'center'"
+            [nzVertical]="true"
+          >
+            <img src="assets/img/stats.png" alt="Logo del sito" style="width: 40%" />
+            <h4 style="margin-top: 1rem; margin-bottom: 1rem" nz-typography>
+              📊 Le statistiche babbe
+            </h4>
+          </div>
         </nz-splitter-panel>
         <nz-splitter-panel [nzResizable]="false" [nzCollapsible]="false">
-          <div class="box">Babbong</div>
+          <div
+            class="box"
+            (click)="onNavigate('/tris')"
+            nz-flex
+            [nzJustify]="'center'"
+            [nzAlign]="'center'"
+            [nzVertical]="true"
+          >
+            <img src="assets/img/tris.png" alt="Logo del sito" style="width: 40%" />
+            <h4 style="margin-top: 1rem; margin-bottom: 1rem" nz-typography>🎯 Trisbabbo</h4>
+          </div>
         </nz-splitter-panel>
         <nz-splitter-panel [nzResizable]="false" [nzCollapsible]="false">
-          <div class="box" (click)="onNavigate('/recipe-book')">Ricettozze</div>
+          <div
+            class="box"
+            (click)="onNavigate('/recipe-book')"
+            nz-flex
+            [nzJustify]="'center'"
+            [nzAlign]="'center'"
+            [nzVertical]="true"
+          >
+            <img src="assets/img/food.png" alt="Logo del sito" style="width: 40%" />
+            <h4 style="margin-top: 1rem; margin-bottom: 1rem" nz-typography>🍕 Ricettario</h4>
+          </div>
         </nz-splitter-panel>
       </nz-splitter>
     </nz-splitter-panel>
@@ -75,8 +166,101 @@
     style="right: 24px"
     (nzOnClick)="openPartyModalsAndCloseAll()"
   ></nz-float-button>
-  <ng-template #description>+ 4</ng-template>
+  <ng-template #description><span style="color: var(--main-pink)">+ 4</span></ng-template>
   <ng-template #icon>
-    <nz-icon nzType="smile" nzTheme="outline" />
+    <nz-icon nzType="gift" nzTheme="outline" style="color: var(--main-pink)" />
+  </ng-template>
+</div>
+
+<div
+  *ngIf="isMobile$ | async"
+  nz-flex
+  style="min-height: 100vh; margin-bottom: 10vh"
+  [nzJustify]="'center'"
+  [nzAlign]="'center'"
+  [nzVertical]="true"
+>
+  <h4 style="color: var(--main-pink)">Esplora le proposte del giorno</h4>
+  <div
+    class="mobile-box"
+    (click)="onNavigate('/photo-gallery')"
+    nz-flex
+    [nzJustify]="'center'"
+    [nzAlign]="'center'"
+    [nzVertical]="false"
+  >
+    <img src="assets/img/gallery2.png" alt="Logo del sito" style="width: 40%" />
+    <h4 style="margin-top: 1rem; margin-bottom: 1rem" nz-typography>📷 Photogallery</h4>
+  </div>
+  <div
+    class="mobile-box"
+    (click)="onNavigate('/quiz')"
+    nz-flex
+    [nzJustify]="'center'"
+    [nzAlign]="'center'"
+    [nzVertical]="false"
+  >
+    <img src="assets/img/quiz.png" alt="Logo del sito" style="width: 40%" />
+    <h4 style="margin-top: 1rem; margin-bottom: 1rem" nz-typography>❓ Il quizzone babbo</h4>
+  </div>
+
+  <div
+    class="mobile-box"
+    (click)="onNavigate('movies-wishlist')"
+    nz-flex
+    [nzJustify]="'center'"
+    [nzAlign]="'center'"
+    [nzVertical]="false"
+  >
+    <img src="assets/img/film.png" alt="Logo del sito" style="width: 40%" />
+    <h4 style="margin-top: 1rem; margin-bottom: 1rem" nz-typography>🎬 Filmettini carini</h4>
+  </div>
+
+  <div
+    class="mobile-box"
+    (click)="onNavigate('/stats')"
+    nz-flex
+    [nzJustify]="'center'"
+    [nzAlign]="'center'"
+    [nzVertical]="false"
+  >
+    <img src="assets/img/stats.png" alt="Logo del sito" style="width: 40%" />
+    <h4 style="margin-top: 1rem; margin-bottom: 1rem" nz-typography>📊 Le statistiche babbe</h4>
+  </div>
+
+  <div
+    class="mobile-box"
+    (click)="onNavigate('/tris')"
+    nz-flex
+    [nzJustify]="'center'"
+    [nzAlign]="'center'"
+    [nzVertical]="false"
+  >
+    <img src="assets/img/tris.png" alt="Logo del sito" style="width: 40%" />
+    <h4 style="margin-top: 1rem; margin-bottom: 1rem" nz-typography>🎯 Trisbabbo</h4>
+  </div>
+
+  <div
+    class="mobile-box"
+    (click)="onNavigate('/recipe-book')"
+    nz-flex
+    [nzJustify]="'center'"
+    [nzAlign]="'center'"
+    [nzVertical]="false"
+  >
+    <img src="assets/img/food.png" alt="Logo del sito" style="width: 40%" />
+    <h4 style="margin-top: 1rem; margin-bottom: 1rem" nz-typography>🍕 Ricettario</h4>
+  </div>
+
+  <nz-float-button
+    [nzIcon]="icon"
+    [nzDescription]="description"
+    nzShape="square"
+    style="right: 24px"
+    (nzOnClick)="openPartyModalsAndCloseAll()"
+  ></nz-float-button>
+  <ng-template #description><span style="color: var(--main-pink)">+ 4</span></ng-template>
+  <ng-template #icon>
+    <nz-icon nzType="gift" nzTheme="outline" style="color: var(--main-pink)" />
   </ng-template>
 </div>

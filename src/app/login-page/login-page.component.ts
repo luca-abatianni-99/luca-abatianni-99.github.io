@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
 import { NavigationEnd, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { filter } from 'rxjs';
+import { NzMessageService } from 'ng-zorro-antd/message';
 
 @Component({
   selector: 'app-login-page',
@@ -29,8 +30,6 @@ import { filter } from 'rxjs';
   styleUrl: './login-page.component.css',
 })
 export class LoginPageComponent implements OnInit {
-  loggedIn: boolean = false;
-
   private fb = inject(NonNullableFormBuilder);
   validateForm = this.fb.group({
     password: this.fb.control('', [Validators.required]),
@@ -39,26 +38,30 @@ export class LoginPageComponent implements OnInit {
   constructor(
     private router: Router,
     private authService: AuthService,
+    private message: NzMessageService,
   ) {}
 
   ngOnInit(): void {
-    this.authService.storeAuth(false)
+    this.authService.storeAuth(false);
   }
 
   checkPwd() {}
 
   submitForm(): void {
     if (this.validateForm.valid) {
+      setTimeout(() => {
+        (document.activeElement as HTMLElement)?.blur();
+      }, 50);
       const insertedPwd = this.validateForm.get('password')?.value || '';
       if (this.authService.checkAuth(insertedPwd)) {
-        this.loggedIn = true;
+        this.message.create('success', 'Yeeee la password è giusta!!!');
         this.authService.storeAuth(true);
         setTimeout(() => {
           this.router.navigate(['/home']);
         }, 2000);
       } else {
-        console.log("Il valore NON è 'pippo'");
-        // fai qualcos'altro o mostra errore
+        this.message.create('error', 'La password è errata. Sei un impostore? Lurdo/a');
+        this.validateForm.reset();
       }
     } else {
       Object.values(this.validateForm.controls).forEach(control => {

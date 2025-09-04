@@ -17,7 +17,7 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
 import { NzTabsModule } from 'ng-zorro-antd/tabs';
 import { NzTypographyComponent } from 'ng-zorro-antd/typography';
-import { interval, Subscription } from 'rxjs';
+import { interval, Observable, Subscription } from 'rxjs';
 import {
   differenceInDays,
   differenceInHours,
@@ -25,6 +25,7 @@ import {
   differenceInSeconds,
   intervalToDuration,
 } from 'date-fns';
+import { ViewportService } from '../../services/viewport.service';
 
 @Component({
   selector: 'app-stats-page',
@@ -62,7 +63,13 @@ export class StatsPageComponent implements OnInit, OnDestroy {
 
   private sub!: Subscription;
 
+  isMobile$: Observable<boolean> = new Observable();
+
+  constructor(private viewportService: ViewportService) {}
+
   ngOnInit(): void {
+    this.isMobile$ = this.viewportService.isHandset$;
+
     this.sub = interval(1000).subscribe(() => {
       const now = new Date();
 

@@ -33,6 +33,9 @@ import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { RecipeService } from '../../services/recipe.service';
 import { Router } from '@angular/router';
 import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
+import { NzMessageService } from 'ng-zorro-antd/message';
+import { NzUploadFile, NzUploadModule } from 'ng-zorro-antd/upload';
+import { NzImageModule } from 'ng-zorro-antd/image';
 
 export enum DishTypeDictionary {
   PRIMI,
@@ -64,6 +67,8 @@ export enum DishTypeDictionary {
     NzEmptyModule,
     NzDividerModule,
     NzPopconfirmModule,
+    NzUploadModule,
+    NzImageModule,
   ],
   templateUrl: './recipe-book.component.html',
   styleUrl: './recipe-book.component.css',
@@ -73,7 +78,11 @@ export class RecipeBookComponent implements OnInit, OnDestroy {
   currentFilter: BehaviorSubject<string> = new BehaviorSubject<string>('primo');
   displayRecipes: RecipeModel[] = [];
   newRecipeFormGroup: FormGroup = new FormGroup([]);
+  selectedRecipePhoto: NzUploadFile[] = [];
   dishTypeDictionary = DishTypeDictionary;
+  newRecipeModalVisible = false;
+  editingRecipe: boolean = false;
+  editedRecipeId: number = -1;
 
   subsToUnsub: Subscription[] = [];
 
@@ -82,6 +91,7 @@ export class RecipeBookComponent implements OnInit, OnDestroy {
     private supabaseService: SupabaseService,
     private recipeService: RecipeService,
     private fb: NonNullableFormBuilder,
+    private message: NzMessageService,
   ) {}
 
   ngOnInit(): void {
@@ -99,7 +109,13 @@ export class RecipeBookComponent implements OnInit, OnDestroy {
     this.recipeService.saveRecipes(this.recipes);
     const filterSub = this.currentFilter.subscribe(filter => {
       console.log(filter);
-      this.displayRecipes = this.recipes.filter(recipe => recipe.tags === filter);
+      this.displayRecipes = this.recipes
+        .filter(recipe => recipe.tags === filter)
+        .sort((a, b) => {
+          const idA = a.id ?? -1;
+          const idB = b.id ?? -1;
+          return idA - idB;
+        });
     });
     this.subsToUnsub.push(filterSub);
   }
@@ -113,14 +129,28 @@ export class RecipeBookComponent implements OnInit, OnDestroy {
   async confirmDelete(id: number | undefined) {
     if (id) {
       await this.supabaseService.deleteRecipe(id);
-      await this.getRecipes()
+      await this.getRecipes();
+      this.message.create('success', 'Ricetta eliminata con successo');
+    } else {
+      this.message.create('error', 'Impossibile eliminare la ricetta');
     }
   }
 
-  newRecipeModalVisible = false;
-
-  showNewReicipeModal(): void {
+  showNewReicipeModal(editingRecipe: boolean, recipeId?: number): void {
+    if (editingRecipe && !recipeId) {
+      return;
+    }
     this.newRecipeModalVisible = true;
+    this.editingRecipe = editingRecipe;
+    if (editingRecipe && recipeId) {
+      this.initEditRecipeForm(recipeId);
+    } else if (!editingRecipe) {
+      this.initNewRecipeForm();
+    }
+  }
+
+  onFileSelected(event: any) {
+    this.selectedRecipePhoto = event.target.files[0];
   }
 
   handleOk(): void {
@@ -135,6 +165,7 @@ export class RecipeBookComponent implements OnInit, OnDestroy {
     console.log('Button cancel clicked!');
     this.newRecipeModalVisible = false;
     this.resetForm();
+    this.selectedRecipePhoto = [];
   }
 
   initNewRecipeForm() {
@@ -154,11 +185,71 @@ export class RecipeBookComponent implements OnInit, OnDestroy {
     this.addIngredient();
   }
 
+  initEditRecipeForm(id: number) {
+    const recipeToEdit = this.recipes.find(rec => rec.id === id);
+    if (!recipeToEdit) {
+      this.newRecipeModalVisible = false;
+      return;
+    }
+    this.editedRecipeId = id;
+
+    const ingredientsToEdit = recipeToEdit?.ingredients
+      ? recipeToEdit.ingredients.map(ingr =>
+          this.fb.group({
+            name: [ingr.name, Validators.required],
+            quantity: [ingr.quantity, Validators.required],
+          }),
+        )
+      : [];
+
+    const stepsToEdit = recipeToEdit?.steps
+      ? recipeToEdit.steps.map(step =>
+          this.fb.group({
+            position: [step.position, []],
+            description: [step.description ?? '', Validators.required],
+          }),
+        )
+      : [];
+
+    this.newRecipeFormGroup = this.fb.group({
+      title: this.fb.control(recipeToEdit?.title ?? '', [Validators.required]),
+      description: this.fb.control(recipeToEdit?.description ?? '', []),
+      tags: this.fb.control(recipeToEdit?.tags ?? 'primo', [Validators.required]),
+      prepTime: this.fb.control(recipeToEdit?.prepTime ?? 0, [Validators.required]),
+      cookTime: this.fb.control(recipeToEdit?.cookTime ?? 0, [Validators.required]),
+      servings: this.fb.control(recipeToEdit?.servings ?? 2, [Validators.required]),
+      ingredients: this.fb.array(ingredientsToEdit ?? []),
+      steps: this.fb.array(stepsToEdit ?? []),
+      imgUrl: this.fb.control(recipeToEdit?.imgUrl ?? '', []),
+      notes: this.fb.control(recipeToEdit?.notes ?? '', []),
+    });
+  }
+
   async submitForm() {
     console.log('submit', this.newRecipeFormGroup.value);
     console.log('submit', this.newRecipeFormGroup.valid);
     if (this.newRecipeFormGroup.valid) {
       const formValue = this.newRecipeFormGroup.value;
+      const lastSelectedPhotoIndex = this.selectedRecipePhoto.length - 1;
+
+      const rawFile =
+        this.selectedRecipePhoto &&
+        this.selectedRecipePhoto[0] &&
+        this.selectedRecipePhoto[0].originFileObj
+          ? (this.selectedRecipePhoto[0].originFileObj as File)
+          : '';
+      let photoPublicUrl: string | null = '';
+
+      if (!rawFile) {
+        console.warn('Nessun file selezionato.');
+        photoPublicUrl = formValue.imgUrl ?? '';
+      } else {
+        photoPublicUrl = await this.supabaseService.uploadRecipeImage(rawFile, rawFile.name);
+      }
+
+      if (!photoPublicUrl) {
+        console.warn('Errore nel caricamento immagine');
+      }
 
       const ingredients: IngredientModel[] = formValue.ingredients.map((ing: any) => ({
         name: ing.name,
@@ -179,13 +270,23 @@ export class RecipeBookComponent implements OnInit, OnDestroy {
         servings: formValue.servings,
         ingredients,
         steps,
-        imgUrl: formValue.imgUrl,
+        imgUrl: photoPublicUrl ?? '',
         notes: formValue.notes,
       };
 
-      await this.supabaseService.saveNewRecipe(recipe);
+      if (this.editingRecipe) {
+        await this.supabaseService.updateRecipe(this.editedRecipeId ?? -1, recipe);
+        this.message.create('success', 'Ricetta aggiornata con successo');
+      } else {
+        await this.supabaseService.saveNewRecipe(recipe);
+        this.message.create('success', 'Ricetta aggiunta con successo');
+      }
+      this.editingRecipe = false;
+      this.editedRecipeId = -1;
+      this.selectedRecipePhoto = [];
       await this.getRecipes();
     } else {
+      this.message.create('error', 'Form non valido');
       console.warn('Form invalido');
     }
   }
@@ -196,30 +297,12 @@ export class RecipeBookComponent implements OnInit, OnDestroy {
     this.newRecipeFormGroup.reset();
   }
 
-  listOfStepsControl: Array<{ id: number; controlInstance: string }> = [];
-
   get steps(): FormArray {
     return this.newRecipeFormGroup.get('steps') as FormArray;
   }
 
   addField(e?: MouseEvent): void {
     e?.preventDefault();
-
-    /* const id =
-      this.listOfStepsControl.length > 0
-        ? this.listOfStepsControl[this.listOfStepsControl.length - 1].id + 1
-        : 0;
-
-    const control = {
-      id,
-      controlInstance: `step-${id}`,
-    };
-    const index = this.listOfStepsControl.push(control);
-    console.log(this.listOfStepsControl[this.listOfStepsControl.length - 1]);
-    this.newRecipeFormGroup.addControl(
-      this.listOfStepsControl[index - 1].controlInstance,
-      this.fb.control('', Validators.required),
-    ); */
 
     const position = this.steps.length + 1;
     const stepGroup = this.fb.group({
@@ -231,12 +314,6 @@ export class RecipeBookComponent implements OnInit, OnDestroy {
 
   removeField(index: number, e: MouseEvent): void {
     e.preventDefault();
-    /* if (this.listOfStepsControl.length > 1) {
-      const index = this.listOfStepsControl.indexOf(i);
-      this.listOfStepsControl.splice(index, 1);
-      console.log(this.listOfStepsControl);
-      this.newRecipeFormGroup.removeControl(i.controlInstance);
-    } */
 
     if (this.steps.length > 1) {
       this.steps.removeAt(index);
@@ -251,18 +328,8 @@ export class RecipeBookComponent implements OnInit, OnDestroy {
   }
 
   removeAllFields() {
-    /* this.listOfStepsControl.forEach(step => {
-      this.newRecipeFormGroup.removeControl(step.controlInstance);
-    });
-    this.listOfStepsControl = []; */
     this.steps.clear();
   }
-
-  listOfIngredilistOfIngredientsControlentsControl: Array<{
-    id: number;
-    ingredientNameControl: string;
-    ingredientQtyControl: string;
-  }> = [];
 
   get ingredients(): FormArray {
     return this.newRecipeFormGroup.get('ingredients') as FormArray;
@@ -271,58 +338,37 @@ export class RecipeBookComponent implements OnInit, OnDestroy {
   addIngredient(e?: MouseEvent): void {
     e?.preventDefault();
 
-    /* const id =
-      this.listOfIngredientsControl.length > 0
-        ? this.listOfIngredientsControl[this.listOfIngredientsControl.length - 1].id + 1
-        : 0;
-
-    const control = {
-      id,
-      ingredientNameControl: `ingredient-name-${id}`,
-      ingredientQtyControl: `ingredient-qty-${id}`,
-    };
-    const index = this.listOfIngredientsControl.push(control); */
-
     const newIngredient = this.fb.group({
       name: ['', Validators.required],
       quantity: ['', Validators.required],
     });
     this.ingredients.push(newIngredient);
-
-    /* this.newRecipeFormGroup.addControl(
-      this.listOfIngredientsControl[index - 1].ingredientNameControl,
-      this.fb.control('', [Validators.required]),
-    );
-    this.newRecipeFormGroup.addControl(
-      this.listOfIngredientsControl[index - 1].ingredientQtyControl,
-      this.fb.control('', [Validators.required]),
-    ); */
   }
 
-  removeIngredient(
-    /* i: { id: number; ingredientNameControl: string; ingredientQtyControl: string }, */
-    index: number,
-    e: MouseEvent,
-  ): void {
+  removeIngredient(index: number, e: MouseEvent): void {
     e.preventDefault();
-    /* if (this.listOfIngredientsControl.length > 1) {
-      const index = this.listOfIngredientsControl.indexOf(i);
-      this.listOfIngredientsControl.splice(index, 1);
-      console.log(this.listOfIngredientsControl);
-      this.newRecipeFormGroup.removeControl(i.ingredientNameControl);
-      this.newRecipeFormGroup.removeControl(i.ingredientQtyControl);
-    } */
+
     if (this.ingredients.length > 1) {
       this.ingredients.removeAt(index);
     }
   }
 
   removeAllIngredients() {
-    /* this.listOfIngredientsControl.forEach(ingr => {
-      this.newRecipeFormGroup.removeControl(ingr.ingredientNameControl);
-      this.newRecipeFormGroup.removeControl(ingr.ingredientQtyControl);
-    });
-    this.listOfIngredientsControl = []; */
     this.ingredients.clear();
+  }
+
+  beforeUpload = (file: NzUploadFile): boolean => {
+    // Previeni la submit e fai upload manualmente
+    return false;
+  };
+
+  deletePhotoFromForm() {
+    this.selectedRecipePhoto = [];
+    this.message.success(
+      'Foto eliminata correttamente. Ignora quella ancora presente in piccolo nel form (è un bug)',
+      {
+        nzDuration: 5000,
+      },
+    );
   }
 }

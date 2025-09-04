@@ -1,7 +1,7 @@
-<div style="min-height: 90vh; padding-top: 10vh;" nz-flex [nzAlign]="'center'" [nzVertical]="true">
-  <div
+<div style="min-height: 90vh; padding-top: 1vh" nz-flex [nzAlign]="'center'" [nzVertical]="true">
+  <!-- <div
     nz-flex
-    style="margin-top: 4rem; width: 100%; height: 100%"
+    style="margin-top: 1rem; width: 100%; height: 100%"
     [nzAlign]="'center'"
     [nzJustify]="'center'"
     [nzVertical]="true"
@@ -16,11 +16,12 @@
     </h3>
     <nz-splitter style="min-height: 50vh; max-width: 50vw" nzLayout="vertical">
       <nz-splitter-panel
+        style="display: flex; align-items: center; justify-content: center"
         *ngFor="let row of [0, 1, 2]"
         [nzResizable]="false"
         [nzCollapsible]="false"
       >
-        <nz-splitter nzLayout="horizontal">
+        <nz-splitter style="min-height: 10vh">
           <nz-splitter-panel
             *ngFor="let cell of matrix[row]; let col = index"
             [nzResizable]="false"
@@ -30,6 +31,10 @@
               class="box"
               [ngClass]="cell.winner ? 'winning-cell' : ''"
               (click)="boxClicked(row, col)"
+              nz-flex
+              [nzJustify]="'center'"
+              [nzAlign]="'center'"
+              [nzVertical]="true"
             >
               <ng-container *ngIf="cell.touched">
                 <div class="flip-wrapper animate-flip">
@@ -53,11 +58,73 @@
         </nz-splitter>
       </nz-splitter-panel>
     </nz-splitter>
+  </div> -->
+
+  <div
+    nz-flex
+    style="margin-top: 1rem; width: 100%; height: 100%"
+    [nzAlign]="'center'"
+    [nzJustify]="'center'"
+    [nzVertical]="true"
+  >
+    <h3
+      nz-typography
+      [ngClass]="
+        currentGameStatus === gameStatusDictionary.PLAYING ? (noemiTurn ? 'noemi' : 'luca') : ''
+      "
+    >
+      {{ currentTitle }}
+    </h3>
+    <div class="tris-grid">
+      <ng-container *ngFor="let row of matrix; let r = index">
+        <ng-container *ngFor="let cell of row; let c = index">
+          <div
+            class="box"
+            [ngClass]="cell.winner ? 'winning-cell' : ''"
+            [class.luca-cell]="cell.owner && cell.owner === 'L'"
+            [class.noemi-cell]="cell.owner && cell.owner === 'N'"
+            (click)="boxClicked(r, c)"
+            nz-flex
+            [nzJustify]="'center'"
+            [nzAlign]="'center'"
+            [nzVertical]="true"
+          >
+            <ng-container *ngIf="cell.touched">
+              <div class="flip-wrapper animate-flip">
+                <img
+                  *ngIf="cell.owner === 'N'; else lucaImg"
+                  style="height: 70%; width: auto"
+                  src="assets/img/noemi_tris.png"
+                  alt="Noemi"
+                />
+                <ng-template #lucaImg>
+                  <img src="assets/img/luca_tris.png" style="height: 70%; width: auto" alt="Luca" />
+                </ng-template>
+              </div>
+            </ng-container>
+          </div>
+        </ng-container>
+      </ng-container>
+    </div>
   </div>
 
   <div nz-flex *ngIf="currentGameStatus === gameStatusDictionary.START" style="padding: 2rem">
-    <button nz-button class="noemi" (click)="startGame(true)">Inizia Noemi</button>
-    <button nz-button class="luca" (click)="startGame(false)">Inizia Luca</button>
+    <button
+      style="margin-left: 0.5rem; margin-right: 0.5rem"
+      nz-button
+      class="noemi"
+      (click)="startGame(true)"
+    >
+      Inizia Noemi
+    </button>
+    <button
+      style="margin-left: 0.5rem; margin-right: 0.5rem"
+      nz-button
+      class="luca"
+      (click)="startGame(false)"
+    >
+      Inizia Luca
+    </button>
   </div>
   <div nz-flex *ngIf="currentGameStatus === gameStatusDictionary.WON" style="padding: 2rem">
     <button nz-button (click)="resetGame()">Giocate di nuovo!</button>

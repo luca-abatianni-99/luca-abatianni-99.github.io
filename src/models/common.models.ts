@@ -6,6 +6,13 @@ export type MovieModel = {
   notes?: string;
   score?: number;
   seen?: boolean;
+  director?: string;
+  actors?: string;
+  released?: string;
+  genre?: string;
+  imdbRating?: number
+  imdbID?: string
+  poster?: string
 };
 
 export type RecipeModel = {
@@ -30,4 +37,16 @@ export type IngredientModel = {
 export type StepModel = {
   position?: number;
   description?: string;
+};
+
+export type Option = {
+  id: number;
+  text: string;
+  correct: boolean;
+};
+
+export type Question = {
+  id: number;
+  text: string;
+  options: Option[];
 };

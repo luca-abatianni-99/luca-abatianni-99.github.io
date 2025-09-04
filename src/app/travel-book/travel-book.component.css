@@ -1,0 +1,13 @@
+@media (max-width: 768px) {
+  .main-container {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    text-align: center;
+    width: 95%;
+    max-width: 95%;
+    overflow-x: hidden; /* ultima difesa contro scroll orizzontale */
+    margin-bottom: 2rem;
+    margin: 0 auto; /* centra il container stesso */
+  }
+}

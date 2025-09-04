@@ -9,9 +9,11 @@ import { NzDrawerComponent, NzDrawerPlacement, NzDrawerModule } from 'ng-zorro-a
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzTreeModule } from 'ng-zorro-antd/tree';
 import { filter, Observable } from 'rxjs';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { AuthService } from '../services/auth.service';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+import { LeafletDirective } from '@bluehalo/ngx-leaflet';
 
 @Component({
   selector: 'app-root',
@@ -29,6 +31,7 @@ import { NzDividerModule } from 'ng-zorro-antd/divider';
     NzTreeModule,
     CommonModule,
     NzDividerModule,
+    NzIconModule,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
@@ -43,6 +46,7 @@ export class AppComponent implements OnInit {
   constructor(
     private router: Router,
     private authService: AuthService,
+    private location: Location
   ) {}
 
   ngOnInit(): void {
@@ -60,6 +64,7 @@ export class AppComponent implements OnInit {
 
   onBack(): void {
     console.log('onBack');
+    this.location.back();
   }
 
   onNavigate(path: string) {
