@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { MovieModel, RecipeModel } from '../models/common.models';
-const supabaseUrl = 'https://ybewqojaquvmsmdyhpnu.supabase.co';
-const supabaseKey =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InliZXdxb2phcXV2bXNtZHlocG51Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM4NzA5OTcsImV4cCI6MjA2OTQ0Njk5N30.IlQN5m_d-nx0X01kBMucDH774hyjhiK7kD2fH2AVvq4';
+const supabaseUrl = 'https://esshogzypxvgsiemdovi.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzc2hvZ3p5cHh2Z3NpZW1kb3ZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAyMjc1MDEsImV4cCI6MjA5NTgwMzUwMX0.MIg16XNAhIsMrvX-XBZFACNg9ed9bsbeYGo2NDMqHdU'
 const galleryAccessKeyId = 'd031708b58670e97697e2431855f0ea6';
 const galleryAccessKey = 'da728e16e16d7ca6ab321169ba2fde2dc5b4649297f37e37eb1509f6f20d249e';
 
